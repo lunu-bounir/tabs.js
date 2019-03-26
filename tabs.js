@@ -48,18 +48,44 @@
         const {target} = e;
         const command = target.dataset.command;
         if (command) {
-          this.emit('action', target.closest('.tab'), command);
+          if (command === 'close') {
+            this.remove(target.closest('.tab'));
+          }
+          else {
+            this.emit('action', target.closest('.tab'), command);
+          }
         }
         e.preventDefault();
       });
       // focus
       parent.addEventListener('focusin', ({target}) => {
-        if (target.classList.contains('tab') && target.dataset.active !== 'true') {
-          [...parent.querySelectorAll('[data-active=true]')].forEach(t => t.dataset.active = false);
-          target.dataset.active = true;
-          this.emit('select', target);
-        }
+        this.activate(target);
       });
+      // keymap
+      (properties.global ? window : parent).addEventListener('keydown', e => {
+        this.keymap(e);
+      });
+    }
+    keymap(e) {
+      if (e.metaKey && e.code.startsWith('Digit')) {
+        const num = Number(e.code.substr(5));
+        e.preventDefault();
+        const tab = this.parent.querySelector(`a.tab:nth-child(${num})`);
+        if (tab) {
+          this.activate(tab);
+        }
+      }
+      else if (e.metaKey && e.altKey && (e.code === 'ArrowLeft' || e.code === 'ArrowRight')) {
+        e.preventDefault();
+        this.navigate(e.code === 'ArrowLeft' ? 'backward' : 'forward');
+      }
+      else if (e.metaKey && e.code === 'KeyW') {
+        e.preventDefault();
+        const active = this.active();
+        if (active) {
+          this.remove(active);
+        }
+      }
     }
     add(title, properties = {}) {
       const node = this.tempate.cloneNode(true);
@@ -68,9 +94,18 @@
         node.dataset.dirty = true;
       }
       this.parent.appendChild(node);
-      this.emit('created', node);
+      this.emit('created', node, properties);
       if (properties.active) {
-        node.focus();
+        this.activate(node);
+      }
+    }
+    remove(tab = this.active()) {
+      if (tab && tab.classList.contains('tab') && tab.dataset.dirty !== 'true') {
+        this.emit('remove', tab);
+        if (tab.dataset.active === 'true') {
+          this.navigate('forward') || this.navigate('backward');
+        }
+        tab.remove();
       }
     }
     clean(tab) {
@@ -78,6 +113,30 @@
     }
     dirty(tab) {
       tab.dataset.dirty = true;
+    }
+    activate(tab) {
+      if (tab && tab.classList.contains('tab') && tab.dataset.active !== 'true') {
+        [...this.parent.querySelectorAll('[data-active=true]')].forEach(t => t.dataset.active = false);
+        tab.dataset.active = true;
+        if (document.hasFocus()) {
+          tab.focus();
+        }
+        this.emit('select', tab);
+      }
+    }
+    active() {
+      return this.parent.querySelector('a.tab[data-active=true]');
+    }
+    navigate(direction = 'forward') {
+      const active = this.active();
+      if (active) {
+        const next = direction === 'forward' ? active.nextElementSibling : active.previousElementSibling;
+        this.activate(next);
+        return next;
+      }
+    }
+    list() {
+      return [...this.parent.querySelectorAll('a.tab')];
     }
   };
   window.Tabs = SimpleTabs;

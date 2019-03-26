@@ -2,7 +2,8 @@
 'use strict';
 
 var tabs = new Tabs(document.getElementById('tabs-1'), {
-  dark: false
+  dark: false,
+  global: true
 });
 tabs.on('created', e => console.log('created', e));
 tabs.on('select', e => console.log('select', e));
