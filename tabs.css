@@ -4,42 +4,54 @@ body {
   font-size: 13px;
   margin: 0;
 }
+.tabs-container {
+  background-color: var(--bg-color, #c6c6c6);
+  flex-direction: row;
+  display: flex;
+  align-items: center;
+}
+.tabs-container.dark {
+  background-color: var(--bg-color, #182126);
+}
 .tabs {
   flex-direction: row;
   display: flex;
-  background-color: var(--bg-color, #c6c6c6);
-}
-.tabs.dark {
-  background-color: var(--bg-color, #182126);
+  overflow: auto;
 }
 .tab {
   display: flex;
   max-width: 150px;
+  width: 100px;
   flex: 1;
   align-items: center;
   text-decoration: none;
   height: 100%;
   min-height: 32px;
   outline: none;
-  background-color: var(--tab-bg-color, #c6c6c6);
+  background-color: var(--tab-bg-color, #cccccc);
   white-space: nowrap;
   overflow: hidden;
 }
 .tab,
-.tab input {
+.tabs-container input,
+.tabs-container path {
   color: var(--color, #5c5c5c);
+  fill: var(--color, #5c5c5c);
 }
-.tabs.dark .tab {
+.tabs-container.dark .tab,
+.tabs-container.dark input,
+.tabs-container.dark path {
+  color: var(--color, #9d9e9d);
+  fill: var(--color, #5c5c5c);
+}
+.tabs-container.dark .tab {
   background-color: var(--tab-bg-color, #212d33);
 }
-.tabs.dark .tab input,
-.tabs.dark .tab {
-  color: var(--color, #9d9e9d);
-}
+
 .tab[data-active=true] {
   background-color: var(--tab-active-bg-color, #f6f6f6);
 }
-.tabs.dark .tab[data-active=true] {
+.tabs-container.dark .tab[data-active=true] {
   background-color: var(--tab-active-bg-color, #313f46);
 }
 .tab span {
@@ -54,15 +66,7 @@ body {
   cursor: pointer;
   padding: 0 10px 0 5px;
 }
-.tab input:focus,
-.tab input:hover {
-  color: var(--color-bright, #000);
-}
 
-.tabs.dark .tab input:focus,
-.tabs.dark .tab input:hover {
-  color: var(--color-bright, #fff);
-}
 .tab:not([data-dirty=true]) [data-command="warn-n-close"] {
   display: none;
 }
@@ -87,4 +91,30 @@ body {
   padding: 0 5px;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+.tabs-container>button {
+  background: var(--tab-bg-color, #cccccc);
+  border: none;
+  outline: none;
+  cursor: pointer;
+  margin-left: 5px;
+  padding: 5px 10px;
+}
+.tabs-container.dark>button {
+  background-color: var(--tab-bg-color, #212d33);
+}
+.tabs-container>button:focus {
+  background-color: var(--tab-active-bg-color, #f6f6f6);
+}
+.tabs-container.dark>button:focus {
+  background-color: var(--tab-active-bg-color, #313f46);
+}
+.tabs-container input:focus,
+.tabs-container input:hover {
+  color: var(--color-bright, #000);
+}
+.tabs-container.dark input:focus,
+.tabs-container.dark input:hover {
+  color: var(--color-bright, #fff);
 }

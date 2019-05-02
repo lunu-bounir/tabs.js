@@ -28,8 +28,11 @@
     constructor(parent, properties = {}) {
       super();
       this.number = 0;
-      this.parent = parent;
-      parent.classList.add('tabs');
+      parent.classList.add('tabs-container');
+      const div = document.createElement('div');
+      parent.appendChild(div);
+      this.parent = div;
+      div.classList.add('tabs');
       if (properties.dark) {
         parent.classList.add('dark');
       }
@@ -41,10 +44,19 @@
           <input type="button" data-command="close" value="×">
           <input type="button" data-command="warn-n-close" value="•">
         </a>
+        <svg version="1.1" viewBox="0 0 512 512" xmlns="http://www.w3.org/2000/svg" width="14">
+          <path d="M417.4,224H288V94.6c0-16.9-14.3-30.6-32-30.6c-17.7,0-32,13.7-32,30.6V224H94.6C77.7,224,64,238.3,64,256  c0,17.7,13.7,32,30.6,32H224v129.4c0,16.9,14.3,30.6,32,30.6c17.7,0,32-13.7,32-30.6V288h129.4c16.9,0,30.6-14.3,30.6-32  C448,238.3,434.3,224,417.4,224z"/>
+        </svg>
       `, 'text/html');
       this.tempate = dom.querySelector('a');
+      // add
+      const add = document.createElement('button');
+      add.addEventListener('click', () => this.emit('new'));
+      add.title = properties.locals && properties.locals.add ? properties.locals.add : 'add a new tab';
+      add.appendChild(dom.querySelector('svg'));
+      parent.appendChild(add);
       // click
-      parent.addEventListener('click', e => {
+      div.addEventListener('click', e => {
         const {target} = e;
         const command = target.dataset.command;
         if (command) {
@@ -58,7 +70,7 @@
         e.preventDefault();
       });
       // focus
-      parent.addEventListener('focusin', ({target}) => {
+      div.addEventListener('focusin', ({target}) => {
         this.activate(target);
       });
       // keymap
@@ -98,6 +110,7 @@
       if (properties.active) {
         this.activate(node);
       }
+      return node;
     }
     remove(tab = this.active()) {
       if (tab && tab.classList.contains('tab') && tab.dataset.dirty !== 'true') {
