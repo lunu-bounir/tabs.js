@@ -52,7 +52,7 @@
       // add
       const add = document.createElement('button');
       add.addEventListener('click', () => this.emit('new'));
-      add.title = properties.locals && properties.locals.add ? properties.locals.add : 'add a new tab';
+      add.title = properties.locales && properties.locales.add ? properties.locales.add : 'add a new tab';
       add.appendChild(dom.querySelector('svg'));
       parent.appendChild(add);
       // click
@@ -95,7 +95,12 @@
         e.preventDefault();
         const active = this.active();
         if (active) {
-          this.remove(active);
+          if (active.dataset.dirty === 'true') {
+            this.emit('action', active, 'warn-n-close');
+          }
+          else {
+            this.remove(active);
+          }
         }
       }
     }
@@ -126,6 +131,12 @@
     }
     dirty(tab) {
       tab.dataset.dirty = true;
+    }
+    isDirty(tab) {
+      return tab.dataset.dirty === 'true';
+    }
+    title(tab) {
+      return tab.querySelector('[data-id=title]').textContent;
     }
     activate(tab) {
       if (tab && tab.classList.contains('tab') && tab.dataset.active !== 'true') {
